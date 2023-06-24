@@ -17,20 +17,20 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
-import org.teacon.loongboat.client.model.entity.LoongBoatEntityModel;
-import org.teacon.loongboat.client.renderer.entity.LoongBoatEntityRenderer;
+import org.teacon.loongboat.client.renderer.entity.FakePlayerRenderer;
+import org.teacon.loongboat.world.entity.FakePeopleBase;
 import org.teacon.loongboat.world.entity.LoongBoatEntity;
-import org.teacon.loongboat.world.item.LoongBoatItem;
+import org.teacon.loongboat.world.item.FakePeopleItem;
 
-@Mod(LoongBoat.MODID)
-public class LoongBoat {
-    public static final String MODID = "loongboat";
+@Mod(Idealland.MODID)
+public class Idealland {
+    public static final String MODID = "fakepeople";
     public static final Logger LOGGER = LogUtils.getLogger();
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MODID);
     public static final DeferredRegister<EntityType<?>> ENTITIES  = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MODID);
 
-    public static final RegistryObject<LoongBoatItem> LOONG_BOAT_ITEM = ITEMS.register(LoongBoatItem.ITEM_NAME,
-            LoongBoatItem::new);
+    public static final RegistryObject<FakePeopleItem> LOONG_BOAT_ITEM = ITEMS.register(FakePeopleItem.ITEM_NAME,
+            FakePeopleItem::new);
 
     public static final RegistryObject<EntityType<LoongBoatEntity>> LOONG_BOAT_ENTITY = ENTITIES.register(LoongBoatEntity.ENTITY_NAME,
             () -> EntityType.Builder.<LoongBoatEntity>of(LoongBoatEntity::new, MobCategory.MISC)
@@ -38,7 +38,14 @@ public class LoongBoat {
                     .clientTrackingRange(10)
                     .build(LoongBoatEntity.ENTITY_NAME));
 
-    public LoongBoat() {
+    public static final String FAKE_PEOPLE_NAME = "fake_people";
+    public static final RegistryObject<EntityType<FakePeopleBase>> FAKE_PEOPLE_ENTITY = ENTITIES.register(FAKE_PEOPLE_NAME,
+            () -> EntityType.Builder.<FakePeopleBase>of(FakePeopleBase::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.8F)
+                    .clientTrackingRange(10)
+                    .build(FAKE_PEOPLE_NAME));
+
+    public Idealland() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
         ITEMS.register(modEventBus);
@@ -58,13 +65,14 @@ public class LoongBoat {
     public static class ClientModEvents {
         @SubscribeEvent
         public static void registerRenderers(final EntityRenderersEvent.RegisterRenderers event) {
-            event.registerEntityRenderer(LOONG_BOAT_ENTITY.get(), LoongBoatEntityRenderer::new);
+//            event.registerEntityRenderer(LOONG_BOAT_ENTITY.get(), LoongBoatEntityRenderer::new);
+            event.registerEntityRenderer(FAKE_PEOPLE_ENTITY.get(), FakePlayerRenderer::new);
         }
 
         @SubscribeEvent
         public static void registerLayerDefinitions(final EntityRenderersEvent.RegisterLayerDefinitions event) {
-            event.registerLayerDefinition(LoongBoatEntityModel.VanillaModel.getModelLayerLocation(),
-                    LoongBoatEntityModel.VanillaModel::createBodyModel);
+//            event.registerLayerDefinition(LoongBoatEntityModel.VanillaModel.getModelLayerLocation(),
+//                    LoongBoatEntityModel.VanillaModel::createBodyModel);
         }
     }
 }

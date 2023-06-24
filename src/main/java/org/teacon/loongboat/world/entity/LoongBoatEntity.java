@@ -16,27 +16,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.teacon.loongboat.LoongBoat;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.AnimationState;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.core.object.PlayState;
-import software.bernie.geckolib.util.GeckoLibUtil;
+import org.teacon.loongboat.Idealland;
 
-import java.util.function.Predicate;
-
-public class LoongBoatEntity extends Boat implements GeoEntity {
+public class LoongBoatEntity extends Boat {
     public static final String ENTITY_NAME = "loong_boat";
 
-    /**
-     * valid values: 0, 1, 2; invalid sizes are reset to DEFAULT_SIZE in setSize
-     *
-     * @see LoongBoatEntity#setSize
-     */
     private static final EntityDataAccessor<Byte> DATA_ID_SIZE =
             SynchedEntityData.defineId(LoongBoatEntity.class, EntityDataSerializers.BYTE);
 
@@ -44,22 +28,14 @@ public class LoongBoatEntity extends Boat implements GeoEntity {
 
     private static final String SIZE_DATA_KEY = "Size";
 
-    private static final RawAnimation MOVE_ANIMATION = RawAnimation.begin().thenLoop(ENTITY_NAME + ".move");
-    private static final RawAnimation MOVE_HEAD_ANIMATION = RawAnimation.begin().thenLoop(ENTITY_NAME + ".move_head");
-    private static final RawAnimation MOVE_HEAD_SLIGHT_ANIMATION = RawAnimation.begin().thenLoop(ENTITY_NAME + ".move_head_slight");
-    private static final RawAnimation ROW_LEFT_ANIMATION = RawAnimation.begin().thenLoop(ENTITY_NAME + ".row_left");
-    private static final RawAnimation ROW_RIGHT_ANIMATION = RawAnimation.begin().thenLoop(ENTITY_NAME + ".row_right");
-
     private int controllerCount = 0;
-
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public LoongBoatEntity(EntityType<? extends Boat> entityType, Level level) {
         super(entityType, level);
     }
 
     public LoongBoatEntity(Level level, double x, double y, double z) {
-        this(LoongBoat.LOONG_BOAT_ENTITY.get(), level);
+        this(Idealland.LOONG_BOAT_ENTITY.get(), level);
         this.setPos(x, y, z);
         this.xo = x;
         this.yo = y;
@@ -68,7 +44,7 @@ public class LoongBoatEntity extends Boat implements GeoEntity {
 
     @SuppressWarnings("NullableProblems")
     @Override
-    public Item getDropItem() {return LoongBoat.LOONG_BOAT_ITEM.get();}
+    public Item getDropItem() {return Idealland.LOONG_BOAT_ITEM.get();}
 
     @SuppressWarnings("NullableProblems")
     @Override
@@ -113,51 +89,10 @@ public class LoongBoatEntity extends Boat implements GeoEntity {
 
     public byte getSize() {return this.entityData.get(DATA_ID_SIZE);}
 
-    public void setSize(byte size) {
-        if (size < 0 || size > 2) {
-            LoongBoat.LOGGER.warn("Loong Boat entity (uuid="
-                    + this.getStringUUID()
-                    + ") has its Size been set to an invalid value: "
-                    + size);
-            size = DEFAULT_SIZE;
-        }
-        this.entityData.set(DATA_ID_SIZE, size);
-        // reload all animations after resizing
-        this.getAnimatableInstanceCache().getManagerForId(this.getId()).getAnimationControllers()
-                .values().forEach(AnimationController::forceAnimationReset);
-    }
-
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putByte(SIZE_DATA_KEY, this.getSize());
     }
-
-    @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        if (tag.contains(SIZE_DATA_KEY, 1)) { // id of ByteTag is 1
-            this.setSize(tag.getByte(SIZE_DATA_KEY));
-        }
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        controllerRegistrar.add(
-                new AnimationController<GeoAnimatable>(this, this.nextControllerName(), 2,
-                        state -> {
-                            if (this.getPaddleState(Boat.PADDLE_LEFT) || this.getPaddleState(Boat.PADDLE_RIGHT))
-                                if (this.isControllerFirstPerson())
-                                    return state.setAndContinue(MOVE_HEAD_SLIGHT_ANIMATION);
-                                else return state.setAndContinue(MOVE_HEAD_ANIMATION);
-                            else return PlayState.STOP;
-                        }),
-                predicateController(MOVE_ANIMATION, state -> this.getPaddleState(Boat.PADDLE_LEFT) || this.getPaddleState(Boat.PADDLE_RIGHT)),
-                predicateController(ROW_LEFT_ANIMATION, state -> this.getPaddleState(Boat.PADDLE_LEFT)),
-                predicateController(ROW_RIGHT_ANIMATION, state -> this.getPaddleState(Boat.PADDLE_RIGHT))
-        );
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {return this.cache;}
 
     public boolean isControllerFirstPerson() {
         var mc = Minecraft.getInstance();
@@ -174,9 +109,4 @@ public class LoongBoatEntity extends Boat implements GeoEntity {
     }
 
     private String nextControllerName() {return "controller" + (this.controllerCount++);}
-
-    private AnimationController<LoongBoatEntity> predicateController(RawAnimation anim, Predicate<AnimationState<LoongBoatEntity>> predicate) {
-        return new AnimationController<>(this, this.nextControllerName(), 2,
-                state -> predicate.test(state) ? state.setAndContinue(anim) : PlayState.STOP);
-    }
 }
