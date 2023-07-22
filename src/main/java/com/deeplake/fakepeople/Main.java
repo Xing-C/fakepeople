@@ -1,6 +1,7 @@
 package com.deeplake.fakepeople;
 
 import com.deeplake.fakepeople.world.item.FakePeopleItem;
+import com.deeplake.fakepeople.world.item.FakePeopltemWithAI;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -29,7 +30,11 @@ public class Main {
     public static final RegistryObject<FakePeopleItem> LOONG_BOAT_ITEM = ITEMS.register(FakePeopleItem.ITEM_NAME,
             FakePeopleItem::new);
 
+    public static final RegistryObject<FakePeopleItem> ITEM_WITH_AI = ITEMS.register(FakePeopltemWithAI.ITEM_NAME,
+            FakePeopltemWithAI::new);
+
     public static final String FAKE_PEOPLE_NAME = "fake_people";
+    public static final String FAKE_PEOPLE_AI_NAME = "fake_people_ai";
 
     public Main() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();

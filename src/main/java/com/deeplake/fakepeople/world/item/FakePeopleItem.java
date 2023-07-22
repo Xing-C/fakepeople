@@ -1,6 +1,7 @@
 package com.deeplake.fakepeople.world.item;
 
 import com.deeplake.fakepeople.world.entity.FakePeopleBase;
+import com.deeplake.fakepeople.world.entity.FakePeopleNoAI;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -23,29 +25,10 @@ public class FakePeopleItem extends Item  {
     private static final Predicate<Entity> PICKABLE_ENTITY_PREDICATE =
             EntitySelector.NO_SPECTATORS.and(Entity::isPickable);
     public static final String ITEM_NAME = "basic_fake";
-//    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public FakePeopleItem() {
         super(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
     }
-
-//    @Override
-//    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-//        consumer.accept(new IClientItemExtensions() {
-//            private GeoItemRenderer<FakePeopleBase> renderer = null;
-//
-//            @Override
-//            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-//                if (this.renderer == null) {
-//                    this.renderer = new GeoItemRenderer<>(new LoongBoatItemModel());
-//                }
-//                return this.renderer;
-//            }
-//        });
-//    }
-
-//    @Override
-//    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {}
 
     /**
      * @see net.minecraft.world.item.BoatItem#use
@@ -74,7 +57,7 @@ public class FakePeopleItem extends Item  {
             // put a bot in an empty (collision-free) space
             if (hitresult.getType() == HitResult.Type.BLOCK) {
                 var loc = hitresult.getLocation();
-                FakePeopleBase fakeman = new FakePeopleBase(level, loc.x, loc.y, loc.z);
+                FakePeopleBase fakeman = getFakeman(level, loc);
                 fakeman.setYRot(player.getYRot());
                 if (!level.noCollision(fakeman, fakeman.getBoundingBox())) {
                     return InteractionResultHolder.fail(itemstack);
@@ -94,6 +77,11 @@ public class FakePeopleItem extends Item  {
 
             return InteractionResultHolder.pass(itemstack);
         }
+    }
+
+    @NotNull
+    public FakePeopleBase getFakeman(Level level, Vec3 loc) {
+        return new FakePeopleNoAI(level, loc.x, loc.y, loc.z);
     }
 
 //    @Override

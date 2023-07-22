@@ -1,4 +1,6 @@
 {
   "item.fakepeople.basic_fake": "Spawn Fake Player",
-  "entity.fakepeople.fake_people": "Player"
+  "item.fakepeople.ai_fake": "Spawn Fake Player with AI",
+  "entity.fakepeople.fake_people": "Player",
+  "entity.fakepeople.fake_people_ai": "Player"
 }

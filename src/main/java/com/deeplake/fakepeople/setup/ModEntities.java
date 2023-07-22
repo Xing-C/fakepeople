@@ -2,6 +2,8 @@ package com.deeplake.fakepeople.setup;
 
 import com.deeplake.fakepeople.Main;
 import com.deeplake.fakepeople.world.entity.FakePeopleBase;
+import com.deeplake.fakepeople.world.entity.FakePeopleNoAI;
+import com.deeplake.fakepeople.world.entity.FakePeopleWithAI;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -22,11 +24,17 @@ public class ModEntities {
 //                    .sized(1.375F, 0.5625F)
 //                    .clientTrackingRange(10)
 //                    .build(LoongBoatEntity.ENTITY_NAME));
-    public static final RegistryObject<EntityType<FakePeopleBase>> FAKE_PEOPLE_ENTITY = Main.ENTITIES.register(Main.FAKE_PEOPLE_NAME,
-            () -> EntityType.Builder.<FakePeopleBase>of(FakePeopleBase::new, MobCategory.CREATURE)
+    public static final RegistryObject<EntityType<FakePeopleNoAI>> FAKE_PEOPLE_ENTITY = Main.ENTITIES.register(Main.FAKE_PEOPLE_NAME,
+            () -> EntityType.Builder.<FakePeopleNoAI>of(FakePeopleNoAI::new, MobCategory.CREATURE)
                     .sized(0.6F, 1.8F)
                     .clientTrackingRange(10)
                     .build(Main.FAKE_PEOPLE_NAME));
+
+    public static final RegistryObject<EntityType<FakePeopleWithAI>> FAKE_PEOPLE_AI_ENTITY = Main.ENTITIES.register(Main.FAKE_PEOPLE_AI_NAME,
+            () -> EntityType.Builder.<FakePeopleWithAI>of(FakePeopleWithAI::new, MobCategory.CREATURE)
+                    .sized(0.6F, 1.8F)
+                    .clientTrackingRange(10)
+                    .build(Main.FAKE_PEOPLE_AI_NAME));
 
     private static <T extends Entity> RegistryObject<EntityType<T>> getEntityTypeRegistryObject(String name, EntityType.EntityFactory<T> factory, float sizeXZ, float sizeY, MobCategory category) {
         return ENTITIES.register(name, () -> getBuilder(factory, sizeXZ, sizeY, category)
@@ -51,6 +59,7 @@ public class ModEntities {
     @SubscribeEvent
     public static void onAttributeCreate(EntityAttributeCreationEvent event) {
         event.put(ModEntities.FAKE_PEOPLE_ENTITY.get(), FakePeopleBase.prepareAttributes().build());
+        event.put(ModEntities.FAKE_PEOPLE_AI_ENTITY.get(), FakePeopleBase.prepareAttributes().build());
 //        event.put(ModEntities.WORLD_BOSS.get(), EntityWorldBoss.prepareAttributes().build());
 //        event.put(ModEntities.MJDS_SKELETON.get(), EntityMJDSSkeleton.prepareAttributes().build());
 //        event.put(ModEntities.MJDS_BLAZE.get(), EntityMJDSBlaze.prepareAttributes().build());
