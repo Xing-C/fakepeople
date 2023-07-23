@@ -27,7 +27,7 @@ public class Main {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, MOD_ID);
     public static final DeferredRegister<EntityType<?>> ENTITIES  = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, MOD_ID);
 
-    public static final RegistryObject<FakePeopleItem> LOONG_BOAT_ITEM = ITEMS.register(FakePeopleItem.ITEM_NAME,
+    public static final RegistryObject<FakePeopleItem> ITEM_NO_AI = ITEMS.register(FakePeopleItem.ITEM_NAME,
             FakePeopleItem::new);
 
     public static final RegistryObject<FakePeopleItem> ITEM_WITH_AI = ITEMS.register(FakePeopltemWithAI.ITEM_NAME,
@@ -49,7 +49,11 @@ public class Main {
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES)
-            event.accept(LOONG_BOAT_ITEM);
+        {
+            event.accept(ITEM_NO_AI);
+            event.accept(ITEM_WITH_AI);
+        }
+
     }
 
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
